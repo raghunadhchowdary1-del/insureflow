@@ -1,6 +1,7 @@
 package com.insureflow.insureflow.service;
 
 import com.insureflow.insureflow.entity.*;
+import com.insureflow.insureflow.exception.ResourceNotFoundException;
 import com.insureflow.insureflow.repository.PolicyPurchaseRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,8 @@ public class PolicyPurchaseService {
     private final PolicyPurchaseRepository policyPurchaseRepository;
     private final PolicyPlanService policyPlanService;
 
-    public PolicyPurchaseService(PolicyPurchaseRepository policyPurchaseRepository, PolicyPlanService policyPlanService) {
+    public PolicyPurchaseService(PolicyPurchaseRepository policyPurchaseRepository,
+                                 PolicyPlanService policyPlanService) {
         this.policyPurchaseRepository = policyPurchaseRepository;
         this.policyPlanService = policyPlanService;
     }
@@ -38,6 +40,6 @@ public class PolicyPurchaseService {
 
     public PolicyPurchase getPurchaseById(Long id) {
         return policyPurchaseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Policy purchase not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Policy purchase not found with id: " + id));
     }
 }

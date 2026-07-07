@@ -2,13 +2,15 @@ package com.insureflow.insureflow.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "policy_purchases")
 @Data
-public class PolicyPurchase {
+@EqualsAndHashCode(callSuper = true)
+public class PolicyPurchase extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

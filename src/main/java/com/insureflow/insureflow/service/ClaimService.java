@@ -2,6 +2,7 @@ package com.insureflow.insureflow.service;
 
 import com.insureflow.insureflow.dto.ClaimRequest;
 import com.insureflow.insureflow.entity.*;
+import com.insureflow.insureflow.exception.ResourceNotFoundException;
 import com.insureflow.insureflow.repository.ClaimRepository;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,7 @@ public class ClaimService {
 
     public Claim getClaimById(Long id) {
         return claimRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Claim not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Claim not found with id: " + id));
     }
 
     public void markUnderReview(Long claimId) {

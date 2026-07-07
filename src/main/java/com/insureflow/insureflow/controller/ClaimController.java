@@ -2,6 +2,7 @@ package com.insureflow.insureflow.controller;
 
 import com.insureflow.insureflow.dto.ClaimRequest;
 import com.insureflow.insureflow.entity.PolicyPurchase;
+import com.insureflow.insureflow.exception.UnauthorizedActionException;
 import com.insureflow.insureflow.service.ClaimService;
 import com.insureflow.insureflow.service.CustomUserDetails;
 import com.insureflow.insureflow.service.PolicyPurchaseService;
@@ -37,7 +38,7 @@ public class ClaimController {
         PolicyPurchase purchase = policyPurchaseService.getPurchaseById(purchaseId);
 
         if (!purchase.getUser().getId().equals(userDetails.getUser().getId())) {
-            return "redirect:/customer/my-policies";
+            throw new UnauthorizedActionException("You do not have permission to file a claim for this policy");
         }
 
         model.addAttribute("purchase", purchase);
@@ -55,7 +56,7 @@ public class ClaimController {
         PolicyPurchase purchase = policyPurchaseService.getPurchaseById(purchaseId);
 
         if (!purchase.getUser().getId().equals(userDetails.getUser().getId())) {
-            return "redirect:/customer/my-policies";
+            throw new UnauthorizedActionException("You do not have permission to file a claim for this policy");
         }
 
         if (result.hasErrors()) {

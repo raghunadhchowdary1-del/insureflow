@@ -2,6 +2,7 @@ package com.insureflow.insureflow.service;
 
 import com.insureflow.insureflow.dto.PolicyPlanRequest;
 import com.insureflow.insureflow.entity.PolicyPlan;
+import com.insureflow.insureflow.exception.ResourceNotFoundException;
 import com.insureflow.insureflow.repository.PolicyPlanRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ import java.util.List;
 @Service
 public class PolicyPlanService {
 
-    private final PolicyPlanRepository policyPlanRepository;
+    private PolicyPlanRepository policyPlanRepository;
 
     public PolicyPlanService(PolicyPlanRepository policyPlanRepository) {
         this.policyPlanRepository = policyPlanRepository;
@@ -22,7 +23,7 @@ public class PolicyPlanService {
 
     public PolicyPlan getPlanById(Long id) {
         return policyPlanRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Policy plan not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Policy plan not found with id: " + id));
     }
 
     public PolicyPlan createPlan(PolicyPlanRequest request) {
