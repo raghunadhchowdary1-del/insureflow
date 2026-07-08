@@ -31,7 +31,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="p : ${purchases}">
+                    <tr th:each="p : ${purchasesPage.content}">
                         <td th:text="${p.policyNumber}"></td>
                         <td th:text="${p.policyPlan.name}"></td>
                         <td th:text="${p.purchaseDate}"></td>
@@ -40,9 +40,21 @@
                             <a th:href="@{/customer/claims/file/{id}(id=${p.id})}" class="btn btn-danger btn-sm">File a Claim</a>
                         </td>
                     </tr>
+                    <tr th:if="${purchasesPage.content.isEmpty()}">
+                        <td colspan="5" class="text-center text-muted py-4">No policies purchased yet.</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+
+        <nav th:if="${purchasesPage.totalPages > 1}">
+            <ul class="pagination">
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, purchasesPage.totalPages - 1)}"
+                    th:classappend="${i == purchasesPage.number} ? 'active'">
+                    <a class="page-link" th:href="@{/customer/my-policies(page=${i})}" th:text="${i + 1}"></a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </body>
 </html>

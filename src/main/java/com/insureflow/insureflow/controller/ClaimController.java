@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/customer/claims")
@@ -26,8 +27,11 @@ public class ClaimController {
     }
 
     @GetMapping
-    public String myClaims(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        model.addAttribute("claims", claimService.getClaimsForUser(userDetails.getUser()));
+    public String myClaims(Model model,
+                           @AuthenticationPrincipal CustomUserDetails userDetails,
+                           @RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "10") int size) {
+        model.addAttribute("claims", claimService.getClaimsForUser(userDetails.getUser(), page, size));
         return "customer/claims";
     }
 

@@ -3,16 +3,21 @@ package com.insureflow.insureflow.service;
 import com.insureflow.insureflow.entity.*;
 import com.insureflow.insureflow.exception.ResourceNotFoundException;
 import com.insureflow.insureflow.repository.PolicyPurchaseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Service
 public class PolicyPurchaseService {
 
-    private final PolicyPurchaseRepository policyPurchaseRepository;
+    @Autowired
+    private PolicyPurchaseRepository policyPurchaseRepository;
     private final PolicyPlanService policyPlanService;
 
     public PolicyPurchaseService(PolicyPurchaseRepository policyPurchaseRepository,
@@ -34,8 +39,9 @@ public class PolicyPurchaseService {
         return policyPurchaseRepository.save(purchase);
     }
 
-    public List<PolicyPurchase> getPurchasesForUser(User user) {
-        return policyPurchaseRepository.findByUser(user);
+    public Page<PolicyPurchase> getPurchasesForUser(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("purchaseDate").descending());
+        return policyPurchaseRepository.findByUser(user, pageable);
     }
 
     public PolicyPurchase getPurchaseById(Long id) {

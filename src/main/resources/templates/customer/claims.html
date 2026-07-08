@@ -27,7 +27,7 @@
                     <tr><th>ID</th><th>Policy Number</th><th>Amount (₹)</th><th>Reason</th><th>Filed Date</th><th>Status</th><th>Remarks</th></tr>
                 </thead>
                 <tbody>
-                    <tr th:each="c : ${claims}">
+                    <tr th:each="c : ${claimsPage.content}">
                         <td th:text="${c.id}"></td>
                         <td th:text="${c.policyPurchase.policyNumber}"></td>
                         <td th:text="${c.claimAmount}"></td>
@@ -40,9 +40,21 @@
                         </td>
                         <td th:text="${c.remarks}"></td>
                     </tr>
+                    <tr th:if="${claimsPage.content.isEmpty()}">
+                        <td colspan="7" class="text-center text-muted py-4">No claims filed yet.</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+
+        <nav th:if="${claimsPage.totalPages > 1}">
+            <ul class="pagination">
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, claimsPage.totalPages - 1)}"
+                    th:classappend="${i == claimsPage.number} ? 'active'">
+                    <a class="page-link" th:href="@{/customer/claims(page=${i})}" th:text="${i + 1}"></a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </body>
 </html>

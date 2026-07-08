@@ -68,7 +68,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="plan : ${plans}">
+                    <tr th:each="plan : ${plansPage.content}">
                         <td th:text="${plan.id}"></td>
                         <td th:text="${plan.name}"></td>
                         <td th:text="${plan.type}"></td>
@@ -79,6 +79,15 @@
                 </tbody>
             </table>
         </div>
+
+        <nav th:if="${plansPage.totalPages > 1}">
+            <ul class="pagination">
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, plansPage.totalPages - 1)}"
+                    th:classappend="${i == plansPage.number} ? 'active'">
+                    <a class="page-link" th:href="@{/admin/policies(page=${i})}" th:text="${i + 1}"></a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </body>
 </html>

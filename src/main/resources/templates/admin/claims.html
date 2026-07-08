@@ -27,6 +27,25 @@
 
     <div class="container mt-4">
         <h3 class="fw-bold mb-4">All Claims</h3>
+
+        <form th:action="@{/admin/claims}" method="get" class="row g-2 mb-4">
+            <div class="col-md-4">
+                <input type="text" name="customerName" th:value="${customerName}" class="form-control" placeholder="Search by customer name">
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == selectedStatus}"></option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark w-100"><i class="bi bi-search"></i> Filter</button>
+            </div>
+            <div class="col-md-2">
+                <a href="/admin/claims" class="btn btn-outline-secondary w-100">Clear</a>
+            </div>
+        </form>
+
         <div class="table-responsive">
             <table class="table table-bordered bg-white align-middle">
                 <thead class="table-dark">
@@ -35,7 +54,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="claim : ${claims}">
+                    <tr th:each="claim : ${claimsPage.content}">
                         <td th:text="${claim.id}"></td>
                         <td th:text="${claim.policyPurchase.policyNumber}"></td>
                         <td th:text="${claim.policyPurchase.user.name}"></td>
@@ -57,9 +76,23 @@
                             </div>
                         </td>
                     </tr>
+                    <tr th:if="${claimsPage.content.isEmpty()}">
+                        <td colspan="7" class="text-center text-muted py-4">No claims found.</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+
+        <nav th:if="${claimsPage.totalPages > 1}">
+            <ul class="pagination">
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, claimsPage.totalPages - 1)}"
+                    th:classappend="${i == claimsPage.number} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/admin/claims(page=${i}, status=${selectedStatus}, customerName=${customerName})}"
+                       th:text="${i + 1}"></a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </body>
 </html>

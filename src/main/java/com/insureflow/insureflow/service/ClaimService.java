@@ -4,10 +4,13 @@ import com.insureflow.insureflow.dto.ClaimRequest;
 import com.insureflow.insureflow.entity.*;
 import com.insureflow.insureflow.exception.ResourceNotFoundException;
 import com.insureflow.insureflow.repository.ClaimRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ClaimService {
@@ -43,12 +46,19 @@ public class ClaimService {
         return saved;
     }
 
-    public List<Claim> getClaimsForUser(User user) {
-        return claimRepository.findByPolicyPurchaseUser(user);
+    public Page<Claim> getClaimsForUser(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("filedDate").descending());
+        return claimRepository.findByPolicyPurchaseUser(user, pageable);
     }
 
-    public List<Claim> getAllClaims() {
-        return claimRepository.findAll();
+    public Page<Claim> getAllClaimsFiltered(ClaimStatus status, String customerName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("filedDate").descending());
+        String nameFilter = (customerName != null && !customerName.isBlank()) ? customerName.trim() : null;
+        return claimRepository.findWithFilters(status, nameFilter, pageable);
+    }
+
+    public long countByStatus(ClaimStatus status) {
+        return claimRepository.countByStatus(status);
     }
 
     public Claim getClaimById(Long id) {

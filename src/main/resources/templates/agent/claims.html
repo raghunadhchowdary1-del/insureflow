@@ -26,13 +26,29 @@
 
     <div class="container mt-4">
         <h3 class="fw-bold mb-4">All Claims</h3>
+
+        <form th:action="@{/agent/claims}" method="get" class="row g-2 mb-4">
+            <div class="col-md-4">
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == selectedStatus}"></option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100">Filter</button>
+            </div>
+            <div class="col-md-2">
+                <a href="/agent/claims" class="btn btn-outline-secondary w-100">Clear</a>
+            </div>
+        </form>
+
         <div class="table-responsive">
             <table class="table table-bordered bg-white align-middle">
                 <thead class="table-dark">
                     <tr><th>ID</th><th>Policy Number</th><th>Customer</th><th>Amount (₹)</th><th>Reason</th><th>Status</th><th>Action</th></tr>
                 </thead>
                 <tbody>
-                    <tr th:each="c : ${claims}">
+                    <tr th:each="c : ${claimsPage.content}">
                         <td th:text="${c.id}"></td>
                         <td th:text="${c.policyPurchase.policyNumber}"></td>
                         <td th:text="${c.policyPurchase.user.name}"></td>
@@ -49,9 +65,21 @@
                             </form>
                         </td>
                     </tr>
+                    <tr th:if="${claimsPage.content.isEmpty()}">
+                        <td colspan="7" class="text-center text-muted py-4">No claims found.</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+
+        <nav th:if="${claimsPage.totalPages > 1}">
+            <ul class="pagination">
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, claimsPage.totalPages - 1)}"
+                    th:classappend="${i == claimsPage.number} ? 'active'">
+                    <a class="page-link" th:href="@{/agent/claims(page=${i}, status=${selectedStatus})}" th:text="${i + 1}"></a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </body>
 </html>

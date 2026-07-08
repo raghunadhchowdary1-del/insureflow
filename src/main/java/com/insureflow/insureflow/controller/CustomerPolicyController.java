@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @org.springframework.web.bind.annotation.RequestMapping("/customer")
 public class CustomerPolicyController {
@@ -36,8 +36,10 @@ public class CustomerPolicyController {
     }
 
     @GetMapping("/my-policies")
-    public String myPolicies(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        model.addAttribute("purchases", policyPurchaseService.getPurchasesForUser(userDetails.getUser()));
+    public String myPolicies(@RequestParam(defaultValue = "0") int page,
+                              Model model,
+                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+        model.addAttribute("purchasesPage", policyPurchaseService.getPurchasesForUser(userDetails.getUser(), page, 5));
         return "customer/my-policies";
     }
 }
