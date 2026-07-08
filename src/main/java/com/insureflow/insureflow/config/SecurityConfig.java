@@ -1,5 +1,6 @@
 package com.insureflow.insureflow.config;
 
+import com.insureflow.insureflow.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +13,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,6 +53,11 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .successHandler(successHandler())
                 .permitAll()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo.oidcUserService(customOAuth2UserService))
+                .successHandler(successHandler())
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")

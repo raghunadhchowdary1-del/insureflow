@@ -2,7 +2,6 @@ package com.insureflow.insureflow.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Entity
@@ -14,16 +13,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Name is required")
     private String name;
 
     @Email(message = "Enter a valid email")
     @Column(unique = true)
     private String email;
 
-    @NotBlank(message = "Password is required")
+    // Nullable now - OAuth users don't have a password
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    // Tracks whether this user signed up via email/password or Google
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authProvider = AuthProvider.LOCAL;
 }

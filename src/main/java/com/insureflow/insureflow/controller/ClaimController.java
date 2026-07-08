@@ -3,8 +3,8 @@ package com.insureflow.insureflow.controller;
 import com.insureflow.insureflow.dto.ClaimRequest;
 import com.insureflow.insureflow.entity.PolicyPurchase;
 import com.insureflow.insureflow.exception.UnauthorizedActionException;
+import com.insureflow.insureflow.service.AppUserPrincipal;
 import com.insureflow.insureflow.service.ClaimService;
-import com.insureflow.insureflow.service.CustomUserDetails;
 import com.insureflow.insureflow.service.PolicyPurchaseService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,14 +12,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/customer/claims")
 public class ClaimController {
 
-    private final ClaimService claimService;
-    private final PolicyPurchaseService policyPurchaseService;
+    private ClaimService claimService;
+    private PolicyPurchaseService policyPurchaseService;
 
     public ClaimController(ClaimService claimService, PolicyPurchaseService policyPurchaseService) {
         this.claimService = claimService;
@@ -27,18 +26,17 @@ public class ClaimController {
     }
 
     @GetMapping
-    public String myClaims(Model model,
-                           @AuthenticationPrincipal CustomUserDetails userDetails,
-                           @RequestParam(defaultValue = "0") int page,
-                           @RequestParam(defaultValue = "10") int size) {
-        model.addAttribute("claims", claimService.getClaimsForUser(userDetails.getUser(), page, size));
+    public String myClaims(@RequestParam(defaultValue = "0") int page,
+                            Model model,
+                            @AuthenticationPrincipal AppUserPrincipal userDetails) {
+        model.addAttribute("claimsPage", claimService.getClaimsForUser(userDetails.getUser(), page, 5));
         return "customer/claims";
     }
 
     @GetMapping("/file/{purchaseId}")
     public String fileClaimForm(@PathVariable Long purchaseId,
                                  Model model,
-                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                 @AuthenticationPrincipal AppUserPrincipal userDetails) {
         PolicyPurchase purchase = policyPurchaseService.getPurchaseById(purchaseId);
 
         if (!purchase.getUser().getId().equals(userDetails.getUser().getId())) {
@@ -55,7 +53,7 @@ public class ClaimController {
                                @Valid @ModelAttribute("claimRequest") ClaimRequest request,
                                BindingResult result,
                                Model model,
-                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+                               @AuthenticationPrincipal AppUserPrincipal userDetails) {
 
         PolicyPurchase purchase = policyPurchaseService.getPurchaseById(purchaseId);
 

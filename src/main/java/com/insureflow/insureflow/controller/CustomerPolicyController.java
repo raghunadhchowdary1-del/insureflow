@@ -1,6 +1,6 @@
 package com.insureflow.insureflow.controller;
 
-import com.insureflow.insureflow.service.CustomUserDetails;
+import com.insureflow.insureflow.service.AppUserPrincipal;
 import com.insureflow.insureflow.service.PolicyPlanService;
 import com.insureflow.insureflow.service.PolicyPurchaseService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 @Controller
 @org.springframework.web.bind.annotation.RequestMapping("/customer")
 public class CustomerPolicyController {
 
-    private PolicyPlanService policyPlanService;
-    private PolicyPurchaseService policyPurchaseService;
+    private final PolicyPlanService policyPlanService;
+    private final PolicyPurchaseService policyPurchaseService;
 
     public CustomerPolicyController(PolicyPlanService policyPlanService, PolicyPurchaseService policyPurchaseService) {
         this.policyPlanService = policyPlanService;
@@ -30,7 +31,7 @@ public class CustomerPolicyController {
 
     @PostMapping("/policies/buy/{planId}")
     public String buyPolicy(@PathVariable Long planId,
-                             @AuthenticationPrincipal CustomUserDetails userDetails) {
+                             @AuthenticationPrincipal AppUserPrincipal userDetails) {
         policyPurchaseService.purchasePlan(userDetails.getUser(), planId);
         return "redirect:/customer/my-policies";
     }
@@ -38,7 +39,7 @@ public class CustomerPolicyController {
     @GetMapping("/my-policies")
     public String myPolicies(@RequestParam(defaultValue = "0") int page,
                               Model model,
-                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+                              @AuthenticationPrincipal AppUserPrincipal userDetails) {
         model.addAttribute("purchasesPage", policyPurchaseService.getPurchasesForUser(userDetails.getUser(), page, 5));
         return "customer/my-policies";
     }
