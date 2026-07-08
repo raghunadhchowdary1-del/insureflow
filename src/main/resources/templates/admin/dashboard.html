@@ -22,7 +22,13 @@
     <div class="container mt-5">
         <h3 class="fw-bold mb-1">Admin Dashboard</h3>
         <p class="text-muted mb-4">Manage policy plans and oversee claims.</p>
+        <div th:if="${param.expiryChecked}" class="alert alert-success">
+    <i class="bi bi-check-circle"></i> Policy expiry check completed successfully.
+</div>
 
+<form th:action="@{/admin/run-expiry-check}" method="post" class="mb-4">
+    <button class="btn btn-outline-dark btn-sm"><i class="bi bi-clock-history"></i> Run Policy Expiry Check Now (Demo)</button>
+</form>
         <div class="row g-4">
             <div class="col-md-4">
                 <a href="/admin/policies" class="card card-stat p-4 text-center">
