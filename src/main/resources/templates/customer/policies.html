@@ -24,6 +24,12 @@
 
     <div class="container mt-4">
         <h3 class="fw-bold mb-4">Available Policy Plans</h3>
+         <div th:if="${param.paymentFailed}" class="alert alert-danger">
+            Payment verification failed. Please try again.
+        </div>
+        <div th:if="${param.paymentCancelled}" class="alert alert-warning">
+            Payment was cancelled.
+        </div>
         <div class="row g-4">
             <div class="col-md-4" th:each="plan : ${plans}">
                 <div class="card card-plan p-3">
@@ -32,7 +38,7 @@
                     <p class="text-muted small" th:text="${plan.description}"></p>
                     <p><strong>Premium:</strong> ₹<span th:text="${plan.premiumAmount}"></span></p>
                     <p><strong>Coverage:</strong> ₹<span th:text="${plan.coverageAmount}"></span></p>
-                    <form th:action="@{/customer/policies/buy/{id}(id=${plan.id})}" method="post">
+                    <form th:action="@{/customer/payment/initiate/{id}(id=${plan.id})}" method="post">
                         <button class="btn btn-primary w-100">Buy This Plan</button>
                     </form>
                 </div>
