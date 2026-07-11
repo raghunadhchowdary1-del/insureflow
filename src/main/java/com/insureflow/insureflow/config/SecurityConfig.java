@@ -42,9 +42,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/customer/payment/verify"))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/customer/payment/verify","/webhook/razorpay"))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/webjars/**").permitAll()
+                .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/webjars/**","/webhook/razorpay").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/agent/**").hasRole("AGENT")
                 .requestMatchers("/customer/**").hasRole("CUSTOMER")

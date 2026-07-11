@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PolicyPurchaseService policyPurchaseService;
+
     private final PaymentService paymentService;
 
-    public PaymentController(PolicyPurchaseService policyPurchaseService,
-                             PaymentService paymentService) {
+    public PaymentController(PolicyPurchaseService policyPurchaseService, PaymentService paymentService) {
         this.policyPurchaseService = policyPurchaseService;
         this.paymentService = paymentService;
     }
@@ -32,6 +32,30 @@ public class PaymentController {
 
         PolicyPurchase purchase = policyPurchaseService.initiatePurchase(userDetails.getUser(), planId);
         Payment payment = paymentService.createOrder(purchase);
+
+        model.addAttribute("razorpayKeyId", paymentService.getKeyId());
+        model.addAttribute("orderId", payment.getRazorpayOrderId());
+        model.addAttribute("amount", (int) (payment.getAmount() * 100));
+        model.addAttribute("purchase", purchase);
+        model.addAttribute("customerName", userDetails.getUser().getName());
+        model.addAttribute("customerEmail", userDetails.getUser().getEmail());
+
+        return "customer/checkout";
+    }
+
+    // Retry payment for a purchase stuck in PENDING_PAYMENT (e.g. browser closed mid-payment, or card declined)
+    @PostMapping("/retry/{purchaseId}")
+    public String retryPayment(@PathVariable Long purchaseId,
+                                @AuthenticationPrincipal AppUserPrincipal userDetails,
+                                Model model) throws Exception {
+
+        PolicyPurchase purchase = policyPurchaseService.getPurchaseById(purchaseId);
+
+        if (!purchase.getUser().getId().equals(userDetails.getUser().getId())) {
+            return "redirect:/customer/my-policies";
+        }
+
+        Payment payment = paymentService.createRetryOrder(purchase);
 
         model.addAttribute("razorpayKeyId", paymentService.getKeyId());
         model.addAttribute("orderId", payment.getRazorpayOrderId());
@@ -59,5 +83,13 @@ public class PaymentController {
             System.err.println("==================================");
             return ResponseEntity.internalServerError().body("ERROR: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/history")
+    public String paymentHistory(@RequestParam(defaultValue = "0") int page,
+                                  Model model,
+                                  @AuthenticationPrincipal AppUserPrincipal userDetails) {
+        model.addAttribute("paymentsPage", paymentService.getPaymentHistoryForUser(userDetails.getUser(), page, 10));
+        return "customer/payment-history";
     }
 }

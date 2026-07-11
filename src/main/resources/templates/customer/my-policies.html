@@ -26,6 +26,9 @@
         <div th:if="${param.paymentSuccess}" class="alert alert-success">
             Payment successful! Your policy is now active.
         </div>
+        <a href="/customer/payment/history" class="btn btn-outline-primary btn-sm mb-3">
+            <i class="bi bi-clock-history"></i> View Payment History
+        </a>
         <div class="table-responsive">
             <table class="table table-bordered bg-white align-middle">
                 <thead class="table-dark">
@@ -44,7 +47,10 @@
                                   th:text="${p.status}"></span>
                         </td>
                         <td>
-                            <a th:href="@{/customer/claims/file/{id}(id=${p.id})}" class="btn btn-danger btn-sm">File a Claim</a>
+                            <a th:if="${p.status.name() == 'ACTIVE'}" th:href="@{/customer/claims/file/{id}(id=${p.id})}" class="btn btn-danger btn-sm">File a Claim</a>
+                            <form th:if="${p.status.name() == 'PENDING_PAYMENT'}" th:action="@{/customer/payment/retry/{id}(id=${p.id})}" method="post" class="d-inline">
+                                <button class="btn btn-warning btn-sm">Complete Payment</button>
+                            </form>
                         </td>
                     </tr>
                     <tr th:if="${purchasesPage.content.isEmpty()}">
